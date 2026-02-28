@@ -1,733 +1,411 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>منصة التعلم التفاعلي</title>
-   <style>
-       * {
-           margin: 0;
-           padding: 0;
-           box-sizing: border-box;
-       }
-
-       body {
-           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-           min-height: 100vh;
-           background: linear-gradient(135deg, #09769f 0%, #7BBDE8 100%);
-           position: relative;
-           overflow-x: hidden;
-       }
-
-       body::before {
-           content: '';
-           position: fixed;
-           top: 0;
-           left: 0;
-           width: 100%;
-           height: 100%;
-           background-image: url('wall.jpg');
-           background-size: cover;
-           background-position: center;
-           opacity: 0.15;
-           z-index: 0;
-       }
-
-       .container {
-           position: relative;
-           z-index: 1;
-           max-width: 1400px;
-           margin: 0 auto;
-           padding: 20px;
-       }
-
-       /* رسالة الترحيب */
-       .welcome-message {
-           background: rgba(9, 118, 159, 0.95);
-           border-radius: 20px;
-           padding: 30px;
-           margin-bottom: 30px;
-           display: flex;
-           align-items: center;
-           gap: 25px;
-           box-shadow: 0 15px 35px rgba(9, 118, 159, 0.4);
-           animation: fadeInDown 0.8s ease;
-           border: 2px solid #7BBDE8;
-       }
-
-       .welcome-message img {
-           width: 120px;
-           height: 120px;
-           object-fit: cover;
-           border-radius: 15px;
-           border: 3px solid #7BBDE8;
-       }
-
-       .welcome-content h1 {
-           color: #fff;
-           font-size: 2.2rem;
-           margin-bottom: 10px;
-       }
-
-       .welcome-content p {
-           color: #7BBDE8;
-           font-size: 1.3rem;
-       }
-
-       /* رسالة شغل مخك */
-       .brain-message {
-           position: fixed;
-           left: 20px;
-           top: 50%;
-           transform: translateY(-50%);
-           background: rgba(123, 189, 232, 0.95);
-           border-radius: 20px;
-           padding: 20px;
-           display: flex;
-           align-items: center;
-           gap: 15px;
-           box-shadow: 0 10px 30px rgba(9, 118, 159, 0.5);
-           animation: slideInOut 8s infinite;
-           z-index: 100;
-           border: 2px solid #09769f;
-           max-width: 200px;
-       }
-
-       .brain-message img {
-           width: 80px;
-           height: 80px;
-           object-fit: cover;
-           border-radius: 10px;
-           border: 2px solid #09769f;
-       }
-
-       .brain-message p {
-           color: #09769f;
-           font-size: 1.1rem;
-           font-weight: bold;
-       }
-
-       /* شبكة الفيديوهات */
-       .videos-grid {
-           display: grid;
-           grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-           gap: 25px;
-           margin-bottom: 30px;
-       }
-
-       .video-card {
-           background: rgba(255, 255, 255, 0.1);
-           backdrop-filter: blur(10px);
-           border-radius: 20px;
-           overflow: hidden;
-           box-shadow: 0 10px 30px rgba(9, 118, 159, 0.3);
-           transition: all 0.3s ease;
-           border: 2px solid transparent;
-       }
-
-       .video-card:hover {
-           transform: translateY(-10px);
-           border-color: #7BBDE8;
-           box-shadow: 0 20px 40px rgba(9, 118, 159, 0.5);
-       }
-
-       .video-card.active {
-           border-color: #09769f;
-           box-shadow: 0 0 30px rgba(123, 189, 232, 0.6);
-       }
-
-       .video-header {
-           background: linear-gradient(135deg, #09769f 0%, #7BBDE8 100%);
-           padding: 15px 20px;
-           display: flex;
-           align-items: center;
-           gap: 12px;
-       }
-
-       .video-number {
-           width: 45px;
-           height: 45px;
-           background: #fff;
-           border-radius: 50%;
-           display: flex;
-           align-items: center;
-           justify-content: center;
-           color: #09769f;
-           font-size: 1.3rem;
-           font-weight: bold;
-       }
-
-       .video-title {
-           color: #fff;
-           font-size: 1.2rem;
-           font-weight: bold;
-       }
-
-       .video-container {
-           position: relative;
-           padding: 15px;
-       }
-
-       video {
-           width: 100%;
-           border-radius: 12px;
-           display: block;
-       }
-
-       .video-overlay {
-           position: absolute;
-           top: 0;
-           left: 0;
-           width: 100%;
-           height: 100%;
-           background: rgba(9, 118, 159, 0.9);
-           display: flex;
-           align-items: center;
-           justify-content: center;
-           opacity: 0;
-           transition: opacity 0.3s ease;
-           border-radius: 12px;
-           margin: 15px;
-           width: calc(100% - 30px);
-           height: calc(100% - 30px);
-       }
-
-       .video-card:hover .video-overlay {
-           opacity: 1;
-       }
-
-       .play-btn {
-           width: 70px;
-           height: 70px;
-           background: #7BBDE8;
-           border-radius: 50%;
-           display: flex;
-           align-items: center;
-           justify-content: center;
-           cursor: pointer;
-           transition: transform 0.3s ease;
-       }
-
-       .play-btn:hover {
-           transform: scale(1.1);
-       }
-
-       .play-btn::after {
-           content: '▶';
-           color: #09769f;
-           font-size: 1.8rem;
-           margin-left: 5px;
-       }
-
-       /* البطاقة الأخيرة مع السؤال المقالي */
-       .final-card {
-           grid-column: 1 / -1;
-           background: linear-gradient(135deg, rgba(9, 118, 159, 0.95) 0%, rgba(123, 189, 232, 0.95) 100%);
-           border-radius: 25px;
-           padding: 30px;
-           display: grid;
-           grid-template-columns: 1fr 1fr;
-           gap: 30px;
-           align-items: center;
-           box-shadow: 0 20px 50px rgba(9, 118, 159, 0.4);
-           border: 3px solid #7BBDE8;
-           animation: pulse 2s infinite;
-       }
-
-       .final-video-section {
-           text-align: center;
-       }
-
-       .final-video-section h2 {
-           color: #fff;
-           margin-bottom: 20px;
-           font-size: 1.5rem;
-       }
-
-       .final-video-section video {
-           max-width: 100%;
-           border-radius: 15px;
-           border: 3px solid #fff;
-       }
-
-       .essay-section {
-           background: rgba(255, 255, 255, 0.15);
-           border-radius: 20px;
-           padding: 25px;
-       }
-
-       .essay-section h2 {
-           color: #fff;
-           margin-bottom: 20px;
-           display: flex;
-           align-items: center;
-           gap: 10px;
-       }
-
-       .essay-section h2::before {
-           content: '✍️';
-       }
-
-       .essay-textarea {
-           width: 100%;
-           min-height: 200px;
-           padding: 20px;
-           border: 2px solid #7BBDE8;
-           border-radius: 15px;
-           background: rgba(255, 255, 255, 0.95);
-           font-size: 1rem;
-           line-height: 1.8;
-           resize: vertical;
-           transition: all 0.3s ease;
-       }
-
-       .essay-textarea:focus {
-           outline: none;
-           border-color: #09769f;
-           box-shadow: 0 0 20px rgba(123, 189, 232, 0.5);
-       }
-
-       .essay-textarea::placeholder {
-           color: #09769f;
-           opacity: 0.7;
-       }
-
-       .action-buttons {
-           display: flex;
-           gap: 15px;
-           margin-top: 20px;
-       }
-
-       .btn {
-           padding: 12px 30px;
-           border-radius: 25px;
-           border: none;
-           font-size: 1rem;
-           font-weight: bold;
-           cursor: pointer;
-           transition: all 0.3s ease;
-       }
-
-       .btn-primary {
-           background: #09769f;
-           color: #fff;
-       }
-
-       .btn-primary:hover {
-           background: #fff;
-           color: #09769f;
-       }
-
-       .btn-secondary {
-           background: transparent;
-           color: #fff;
-           border: 2px solid #fff;
-       }
-
-       .btn-secondary:hover {
-           background: #fff;
-           color: #09769f;
-       }
-
-       /* التقدم */
-       .progress-bar {
-           position: fixed;
-           top: 0;
-           left: 0;
-           height: 5px;
-           background: linear-gradient(90deg, #09769f 0%, #7BBDE8 100%);
-           z-index: 1000;
-           transition: width 0.3s ease;
-       }
-
-       /* المحتوى الكتابي للفيديوهات */
-       .video-notes {
-           padding: 15px 20px;
-           background: rgba(255, 255, 255, 0.05);
-       }
-
-       .video-notes textarea {
-           width: 100%;
-           padding: 12px;
-           border: 1px solid #7BBDE8;
-           border-radius: 10px;
-           background: rgba(255, 255, 255, 0.9);
-           font-size: 0.95rem;
-           resize: vertical;
-           min-height: 80px;
-       }
-
-       .video-notes textarea::placeholder {
-           color: #09769f;
-       }
-
-       /* Animations */
-       @keyframes fadeInDown {
-           from {
-               opacity: 0;
-               transform: translateY(-30px);
-           }
-           to {
-               opacity: 1;
-               transform: translateY(0);
-           }
-       }
-
-       @keyframes slideInOut {
-           0%, 100% {
-               opacity: 0;
-               transform: translateY(-50%) translateX(-100px);
-           }
-           10%, 90% {
-               opacity: 1;
-               transform: translateY(-50%) translateX(0);
-           }
-       }
-
-       @keyframes pulse {
-           0%, 100% {
-               transform: scale(1);
-           }
-           50% {
-               transform: scale(1.02);
-           }
-       }
-
-       @keyframes float {
-           0%, 100% {
-               transform: translateY(0);
-           }
-           50% {
-               transform: translateY(-10px);
-           }
-       }
-
-       /* Responsive */
-       @media (max-width: 900px) {
-           .final-card {
-               grid-template-columns: 1fr;
-           }
-
-           .brain-message {
-               display: none;
-           }
-
-           .welcome-message {
-               flex-direction: column;
-               text-align: center;
-           }
-
-           .videos-grid {
-               grid-template-columns: 1fr;
-           }
-       }
-
-       @media (max-width: 600px) {
-           .welcome-content h1 {
-               font-size: 1.5rem;
-           }
-
-           .video-header {
-               padding: 12px 15px;
-           }
-
-           .video-title {
-               font-size: 1rem;
-           }
-       }
-
-       /* مؤشرات التفاعل */
-       .interaction-hint {
-           position: absolute;
-           top: 10px;
-           right: 10px;
-           background: #7BBDE8;
-           color: #09769f;
-           padding: 5px 15px;
-           border-radius: 20px;
-           font-size: 0.85rem;
-           opacity: 0;
-           transition: opacity 0.3s ease;
-       }
-
-       .video-card:hover .interaction-hint {
-           opacity: 1;
-       }
-
-       /* شريط الحالة */
-       .status-indicator {
-           position: fixed;
-           bottom: 20px;
-           right: 20px;
-           background: rgba(9, 118, 159, 0.95);
-           color: #fff;
-           padding: 15px 25px;
-           border-radius: 30px;
-           display: flex;
-           align-items: center;
-           gap: 10px;
-           box-shadow: 0 10px 30px rgba(9, 118, 159, 0.4);
-           z-index: 100;
-       }
-
-       .status-dot {
-           width: 12px;
-           height: 12px;
-           background: #7BBDE8;
-           border-radius: 50%;
-           animation: blink 1.5s infinite;
-       }
-
-       @keyframes blink {
-           0%, 100% {
-               opacity: 1;
-           }
-           50% {
-               opacity: 0.3;
-           }
-       }
-
-       /* تأثيرات إضافية */
-       .glow-effect {
-           position: absolute;
-           width: 300px;
-           height: 300px;
-           background: radial-gradient(circle, rgba(123, 189, 232, 0.3) 0%, transparent 70%);
-           border-radius: 50%;
-           pointer-events: none;
-           animation: float 6s ease-in-out infinite;
-       }
-   </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فيديوهات تعليمية</title>
+    <style>
+        :root {
+            --primary-rgb: 9, 118, 159;
+            --secondary-rgb: 123, 189, 232;
+        }
+        body.light-mode {
+            --primary-rgb: 123, 189, 232;
+            --secondary-rgb: 9, 118, 159;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url('wall.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-color: rgb(var(--primary-rgb));
+            color: rgb(var(--secondary-rgb));
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            gap: 30px;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease;
+        }
+        #mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(var(--secondary-rgb), 0.9);
+            color: rgb(var(--primary-rgb));
+            border: none;
+            padding: 15px 20px;
+            border-radius: 50px;
+            font-size: 1.5em;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        #mode-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+        #focus-banner {
+            background: rgba(var(--primary-rgb), 0.92);
+            padding: 30px;
+            border-radius: 25px;
+            text-align: center;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(var(--secondary-rgb), 0.3);
+        }
+        #focus-banner img {
+            width: 120px;
+            height: auto;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        #focus-banner h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.6);
+        }
+        #focus-banner p {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+        }
+        #notes {
+            width: 100%;
+            min-height: 120px;
+            padding: 20px;
+            border-radius: 15px;
+            border: 3px solid rgb(var(--secondary-rgb));
+            background: rgba(var(--secondary-rgb), 0.15);
+            color: rgb(var(--secondary-rgb));
+            font-size: 1.1em;
+            resize: vertical;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        .video-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+            width: 100%;
+            max-width: 900px;
+        }
+        .video-card {
+            width: 100%;
+            background: rgba(var(--secondary-rgb), 0.25);
+            padding: 30px;
+            border-radius: 25px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 10px 35px rgba(0,0,0,0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--secondary-rgb), 0.2);
+            cursor: pointer;
+        }
+        .video-card:hover {
+            background: rgba(var(--secondary-rgb), 0.55);
+            transform: translateY(-12px) scale(1.03);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.45);
+        }
+        .video-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .video-card video {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        .video-card video:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+        .video-card h3 {
+            font-size: 2.2em;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
+            margin: 0;
+        }
+        .essay-card {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            align-items: center;
+        }
+        .essay-card .essay-label {
+            background: rgb(var(--primary-rgb));
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 2.2em;
+            font-weight: bold;
+            text-shadow: 3px 3px 8px rgba(0,0,0,0.7);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3), inset 0 0 25px rgba(var(--secondary-rgb), 0.4);
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(var(--primary-rgb), 0.96);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            backdrop-filter: blur(20px);
+        }
+        .modal video {
+            max-width: 95vw;
+            max-height: 95vh;
+            width: auto;
+            height: auto;
+            border-radius: 25px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+        }
+        .modal-close {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            background: rgba(var(--secondary-rgb), 0.95);
+            color: rgb(var(--primary-rgb));
+            border: none;
+            padding: 20px 25px;
+            font-size: 2em;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            transition: all 0.3s ease;
+            z-index: 2001;
+        }
+        .modal-close:hover {
+            transform: scale(1.2);
+            background: rgb(var(--secondary-rgb));
+        }
+        #brain-notification {
+            position: fixed;
+            top: 50%;
+            right: -400px;
+            transform: translateY(-50%);
+            background: rgba(var(--primary-rgb), 0.97);
+            padding: 30px;
+            border-radius: 25px 0 0 25px;
+            box-shadow: -15px 0 40px rgba(0,0,0,0.5);
+            transition: right 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            max-width: 400px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(var(--secondary-rgb), 0.3);
+        }
+        #brain-notification.show {
+            right: 0;
+        }
+        #brain-notification img {
+            width: 80px;
+            height: auto;
+            border-radius: 50%;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        #brain-notification h2 {
+            font-size: 2.5em;
+            text-shadow: 3px 3px 8px rgba(0,0,0,0.8);
+            margin: 0;
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+                gap: 25px;
+            }
+            .video-container {
+                gap: 30px;
+            }
+            .video-card {
+                padding: 25px;
+            }
+            .video-card video, .essay-card .essay-label {
+                height: 180px;
+            }
+            #focus-banner h1 {
+                font-size: 2.2em;
+            }
+            .essay-card {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            .essay-card .essay-label {
+                grid-row: 1;
+                height: 180px;
+                font-size: 1.8em;
+                padding: 30px 20px;
+            }
+            .essay-card video {
+                grid-row: 2;
+            }
+            #mode-toggle {
+                top: 15px;
+                right: 15px;
+                padding: 12px 18px;
+                font-size: 1.3em;
+            }
+            .modal-close {
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                font-size: 1.5em;
+            }
+        }
+    </style>
 </head>
 <body>
-   <div class="progress-bar" id="progressBar"></div>
-   
-   <!-- رسالة شغل مخك -->
-   <div class="brain-message">
-       <img src="mokh.jpg" alt="شغل مخك" onerror="this.style.display='none'">
-       <p>🧠 شغل مخك!</p>
-   </div>
+    <button id="mode-toggle">☀️</button>
 
-   <div class="container">
-       <!-- رسالة الترحيب -->
-       <div class="welcome-message">
-           <img src="rakez.jpg" alt="ركز" onerror="this.style.display='none'">
-           <div class="welcome-content">
-               <h1>🎯 ركز و اكتب أي ملاحظات مهمة</h1>
-               <p>ستجد هنا 7 فيديوهات تعليمية تفاعلية. ركز جيداً ولا تنسَ تدوين ملاحظاتك!</p>
-           </div>
-       </div>
+    <div id="focus-banner">
+        <img src="rakez.jpg" alt="ركز">
+        <h1>ركز</h1>
+        <p>اكتب أي ملاحظات مهمة:</p>
+        <textarea id="notes" placeholder="اكتب ملاحظاتك المهمة هنا..."></textarea>
+    </div>
 
-       <!-- شبكة الفيديوهات -->
-       <div class="videos-grid" id="videosGrid">
-           <!-- الفيديوهات سيتم إنشاؤها بالجافاسكريبت -->
-       </div>
+    <div class="video-container">
+        <div class="video-card">
+            <div class="video-wrapper">
+                <video src="q1.mp4" controls preload="metadata"></video>
+            </div>
+            <h3>سؤال ١</h3>
+        </div>
+        <div class="video-card">
+            <div class="video-wrapper">
+                <video src="q2.mp4" controls preload="metadata"></video>
+            </div>
+            <h3>سؤال ٢</h3>
+        </div>
+        <div class="video-card">
+            <div class="video-wrapper">
+                <video src="q3.mp4" controls preload="metadata"></video>
+            </div>
+            <h3>سؤال ٣</h3>
+        </div>
+        <div class="video-card">
+            <div class="video-wrapper">
+                <video src="q4.mp4" controls preload="metadata"></video>
+            </div>
+            <h3>سؤال ٤</h3>
+        </div>
+        <div class="video-card">
+            <div class="video-wrapper">
+                <video src="q5.mp4" controls preload="metadata"></video>
+            </div>
+            <h3>سؤال ٥</h3>
+        </div>
+        <div class="video-card">
+            <div class="video-wrapper">
+                <video src="q6.mp4" controls preload="metadata"></video>
+            </div>
+            <h3>سؤال ٦</h3>
+        </div>
+        <div class="video-card essay-card">
+            <div class="essay-label">سؤال مقالي</div>
+            <div class="video-wrapper">
+                <video src="mkali.mp4" controls preload="metadata"></video>
+            </div>
+        </div>
+    </div>
 
-       <!-- البطاقة الأخيرة -->
-       <div class="final-card">
-           <div class="final-video-section">
-               <h2>📝 الفيديو السابع: السؤال المقالي</h2>
-               <video id="video7" controls poster="">
-                   <source src="mkali.mp4" type="video/mp4">
-                   المتصفح لا يدعم تشغيل الفيديو
-               </video>
-           </div>
-           <div class="essay-section">
-               <h2>أكتب إجابتك هنا</h2>
-               <textarea class="essay-textarea" placeholder="اكتب إجابتك على السؤال المقالي بشكل واضح ومفصل... يمكنك الرجوع للفيديو أعلاه للتأكد من معلوماتك"></textarea>
-               <div class="action-buttons">
-                   <button class="btn btn-primary" onclick="saveEssay()">💾 حفظ الإجابة</button>
-                   <button class="btn btn-secondary" onclick="clearEssay()">🔄 مسح</button>
-               </div>
-           </div>
-       </div>
-   </div>
+    <div id="brain-notification">
+        <img src="mokh.jpg" alt="شغل مخك">
+        <h2>شغل مخك!</h2>
+    </div>
 
-   <!-- شريط الحالة -->
-   <div class="status-indicator">
-       <span class="status-dot"></span>
-       <span id="statusText">جاهز للتعلم</span>
-   </div>
+    <script>
+        // Dark/Light mode toggle
+        const toggle = document.getElementById('mode-toggle');
+        toggle.textContent = '☀️'; // Default dark, toggle to light
+        toggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            toggle.textContent = document.body.classList.contains('light-mode') ? '🌙' : '☀️';
+        });
 
-   <!-- تأثيرات بصرية -->
-   <div class="glow-effect" style="top: 10%; left: 10%;"></div>
-   <div class="glow-effect" style="bottom: 20%; right: 10%; animation-delay: -3s;"></div>
+        // Video enlarge modal
+        let modal = null;
+        function openModal(src) {
+            if (modal) modal.remove();
+            modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <button class="modal-close">&times;</button>
+                <video src="${src}" controls autoplay></video>
+            `;
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.remove();
+            });
+            modal.querySelector('.modal-close').addEventListener('click', () => modal.remove());
+            document.body.appendChild(modal);
+            modal.querySelector('video').focus();
+        }
 
-   <script>
-       // بيانات الفيديوهات
-       const videos = [
-           { id: 1, src: 'q1.mp4', title: 'الفيديو الأول' },
-           { id: 2, src: 'q2.mp4', title: 'الفيديو الثاني' },
-           { id: 3, src: 'q3.mp4', title: 'الفيديو الثالث' },
-           { id: 4, src: 'q4.mp4', title: 'الفيديو الرابع' },
-           { id: 5, src: 'q5.mp4', title: 'الفيديو الخامس' },
-           { id: 6, src: 'q6.mp4', title: 'الفيديو السادس' }
-       ];
+        // Close modal on Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal) {
+                modal.remove();
+            }
+        });
 
-       // إنشاء بطاقات الفيديوهات
-       const videosGrid = document.getElementById('videosGrid');
+        // Click video to enlarge
+        document.querySelectorAll('video').forEach(video => {
+            video.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openModal(video.src);
+            });
+        });
 
-       videos.forEach((video, index) => {
-           const card = document.createElement('div');
-           card.className = 'video-card';
-           card.id = `card-${video.id}`;
-           
-           card.innerHTML = `
-               <div class="video-header">
-                   <div class="video-number">${video.id}</div>
-                   <div class="video-title">${video.title}</div>
-               </div>
-               <div class="video-container">
-                   <span class="interaction-hint">🖱️ مرر للتفاعل</span>
-                   <video id="video${video.id}" controls>
-                       <source src="${video.src}" type="video/mp4">
-                       المتصفح لا يدعم تشغيل الفيديو
-                   </video>
-                   <div class="video-overlay" onclick="playVideo(${video.id})">
-                       <div class="play-btn"></div>
-                   </div>
-               </div>
-               <div class="video-notes">
-                   <textarea id="notes-${video.id}" placeholder="✏️ اكتب ملاحظاتك عن هذا الفيديو هنا..." oninput="updateProgress()"></textarea>
-               </div>
-           `;
-           
-           videosGrid.appendChild(card);
-       });
+        // Hover preview play
+        document.querySelectorAll('.video-card').forEach(card => {
+            const video = card.querySelector('video');
+            card.addEventListener('mouseenter', () => {
+                video.currentTime = 0;
+                video.play().catch(() => {});
+            });
+            card.addEventListener('mouseleave', () => {
+                video.pause();
+            });
+        });
 
-       // تشغيل الفيديو
-       function playVideo(id) {
-           const video = document.getElementById(`video${id}`);
-           const card = document.getElementById(`card-${id}`);
-           
-           // إيقاف الفيديوهات الأخرى
-           document.querySelectorAll('video').forEach(v => {
-               if (v !== video) v.pause();
-           });
-           
-           // إزالة التنشيط من جميع البطاقات
-           document.querySelectorAll('.video-card').forEach(c => {
-               c.classList.remove('active');
-           });
-           
-           // تنشيط البطاقة الحالية
-           card.classList.add('active');
-           
-           // تشغيل الفيديو
-           video.play();
-           updateStatus(`💡 تشاهد الآن: الفيديو ${id}`);
-       }
+        // Periodic brain message
+        setInterval(() => {
+            const notification = document.getElementById('brain-notification');
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4500);
+        }, 20000);
 
-       // تحديث شريط التقدم
-       let watchedVideos = new Set();
-       let notesWritten = 0;
-
-       function updateProgress() {
-           const totalVideos = 7;
-           const allNotes = document.querySelectorAll('textarea');
-           notesWritten = Array.from(allNotes).filter(t => t.value.trim().length > 10).length;
-           
-           const progress = (notesWritten / totalVideos) * 100;
-           document.getElementById('progressBar').style.width = `${progress}%`;
-           
-           if (progress === 100) {
-               updateStatus('🎉 أكملت جميع الملاحظات!');
-               celebrate();
-           }
-       }
-
-       // تحديث حالة الشريط السفلي
-       function updateStatus(text) {
-           document.getElementById('statusText').textContent = text;
-       }
-
-       // حفظ الإجابة المقالية
-       function saveEssay() {
-           const essay = document.querySelector('.essay-textarea').value;
-           if (essay.trim().length < 50) {
-               alert('✋ الرجاء كتابة إجابة أكثر تفصيلاً (50 حرف على الأقل)');
-               return;
-           }
-           updateStatus('✅ تم حفظ الإجابة بنجاح!');
-           alert('🎉 تم حفظ إجابتك بنجاح! استمر في التميز');
-           updateProgress();
-       }
-
-       // مسح الإجابة
-       function clearEssay() {
-           if (confirm('هل أنت متأكد من مسح الإجابة؟')) {
-               document.querySelector('.essay-textarea').value = '';
-               updateStatus('🔄 تم مسح الإجابة');
-           }
-       }
-
-       // تأثير الاحتفال
-       function celebrate() {
-           const colors = ['#09769f', '#7BBDE8', '#fff'];
-           for (let i = 0; i < 50; i++) {
-               setTimeout(() => {
-                   const dot = document.createElement('div');
-                   dot.style.position = 'fixed';
-                   dot.style.left = Math.random() * 100 + '%';
-                   dot.style.top = '-10px';
-                   dot.style.width = '10px';
-                   dot.style.height = '10px';
-                   dot.style.background = colors[Math.floor(Math.random() * colors.length)];
-                   dot.style.borderRadius = '50%';
-                   dot.style.pointerEvents = 'none';
-                   dot.style.animation = 'fall 3s linear forwards';
-                   document.body.appendChild(dot);
-                   
-                   setTimeout(() => dot.remove(), 3000);
-               }, i * 50);
-           }
-       }
-
-       // إضافة أنيميشن السقوط
-       const style = document.createElement('style');
-       style.textContent = `
-           @keyframes fall {
-               to {
-                   transform: translateY(100vh) rotate(360deg);
-                   opacity: 0;
-               }
-           }
-       `;
-       document.head.appendChild(style);
-
-       // مراقبة مشاهدة الفيديوهات
-       document.querySelectorAll('video').forEach(video => {
-           video.addEventListener('play', function() {
-               const id = this.id.replace('video', '');
-               watchedVideos.add(id);
-               updateStatus(`▶️ تشغيل: الفيديو ${id}`);
-           });
-           
-           video.addEventListener('ended', function() {
-               const id = this.id.replace('video', '');
-               updateStatus(`✅ اكتمل: الفيديو ${id}`);
-           });
-       });
-
-       // رسائل تحفيزية دورية
-       const messages = [
-           '💪 أنت تفعل رائعاً! استمر!',
-           '🧠 شغل مخك وفكر بعمق',
-           '✨ كل ملاحظة تقربك من النجاح',
-           '🎯 ركز على الفهم وليس الحفظ',
-           '🚀 أنت في الطريق الصحيح!'
-       ];
-
-       setInterval(() => {
-           const msg = messages[Math.floor(Math.random() * messages.length)];
-           if (Math.random() > 0.7) {
-               updateStatus(msg);
-           }
-       }, 10000);
-
-       // تهيئة
-       updateProgress();
-       updateStatus('🎓 مرحباً! ابدأ رحلتك التعليمية الآن');
-   </script>
+        // Click to dismiss brain notification
+        document.getElementById('brain-notification').addEventListener('click', function() {
+            this.classList.remove('show');
+        });
+    </script>
 </body>
 </html>
