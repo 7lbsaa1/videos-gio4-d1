@@ -3,408 +3,417 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فيديوهات تعليمية</title>
+    <title>منصة التعلم الذكي</title>
     <style>
         :root {
-            --primary-rgb: 9, 118, 159;
-            --secondary-rgb: 123, 189, 232;
+            --primary: #09769f;
+            --accent: #7BBDE8;
+            --bg-overlay: rgba(255, 255, 255, 0.9);
+            --text-color: #09769f;
+            --card-bg: rgba(123, 189, 232, 0.15);
         }
-        body.light-mode {
-            --primary-rgb: 123, 189, 232;
-            --secondary-rgb: 9, 118, 159;
+
+        [data-theme="dark"] {
+            --primary: #7BBDE8;
+            --accent: #09769f;
+            --bg-overlay: rgba(9, 118, 159, 0.9);
+            --text-color: #f0f0f0;
+            --card-bg: rgba(0, 0, 0, 0.4);
         }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            transition: background 0.3s, color 0.3s;
         }
+
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-image: url('wall.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            background-color: rgb(var(--primary-rgb));
-            color: rgb(var(--secondary-rgb));
+            color: var(--text-color);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             padding: 20px;
-            gap: 30px;
-            overflow-x: hidden;
-            transition: background-color 0.3s ease;
         }
-        #mode-toggle {
+
+        /* Dark Mode Toggle */
+        .theme-switch {
             position: fixed;
             top: 20px;
-            right: 20px;
-            z-index: 100;
-            background: rgba(var(--secondary-rgb), 0.9);
-            color: rgb(var(--primary-rgb));
+            left: 20px;
+            z-index: 1000;
+            background: var(--primary);
+            color: white;
             border: none;
-            padding: 15px 20px;
+            padding: 10px 20px;
             border-radius: 50px;
-            font-size: 1.5em;
             cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--bg-overlay);
             backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
         }
-        #mode-toggle:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-        }
-        #focus-banner {
-            background: rgba(var(--primary-rgb), 0.92);
-            padding: 30px;
-            border-radius: 25px;
+
+        /* Header Section */
+        .header {
             text-align: center;
-            width: 100%;
-            max-width: 800px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(var(--secondary-rgb), 0.3);
+            margin-bottom: 40px;
+            border-bottom: 3px solid var(--accent);
+            padding-bottom: 20px;
         }
-        #focus-banner img {
+
+        .header img {
             width: 120px;
-            height: auto;
+            height: 120px;
             border-radius: 50%;
-            margin-bottom: 20px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-        }
-        #focus-banner h1 {
-            font-size: 3em;
+            border: 5px solid var(--accent);
             margin-bottom: 15px;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.6);
         }
-        #focus-banner p {
-            font-size: 1.3em;
-            margin-bottom: 20px;
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
         }
-        #notes {
+
+        .notes-area {
             width: 100%;
-            min-height: 120px;
-            padding: 20px;
+            max-width: 600px;
+            margin: 20px auto;
+            display: block;
+        }
+
+        textarea {
+            width: 100%;
+            height: 80px;
             border-radius: 15px;
-            border: 3px solid rgb(var(--secondary-rgb));
-            background: rgba(var(--secondary-rgb), 0.15);
-            color: rgb(var(--secondary-rgb));
-            font-size: 1.1em;
-            resize: vertical;
+            border: 2px solid var(--accent);
+            background: transparent;
+            color: var(--text-color);
+            padding: 15px;
             font-family: inherit;
-            transition: all 0.3s ease;
+            resize: none;
         }
-        .video-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 40px;
-            width: 100%;
-            max-width: 900px;
+
+        /* Video Grid */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
         }
+
         .video-card {
-            width: 100%;
-            background: rgba(var(--secondary-rgb), 0.25);
-            padding: 30px;
-            border-radius: 25px;
-            text-align: center;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            box-shadow: 0 10px 35px rgba(0,0,0,0.25);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(var(--secondary-rgb), 0.2);
-            cursor: pointer;
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(123, 189, 232, 0.3);
+            transition: transform 0.3s;
         }
+
         .video-card:hover {
-            background: rgba(var(--secondary-rgb), 0.55);
-            transform: translateY(-12px) scale(1.03);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.45);
+            transform: translateY(-5px);
         }
+
         .video-wrapper {
             position: relative;
-            margin-bottom: 20px;
-        }
-        .video-card video {
             width: 100%;
-            height: 220px;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            background: #000;
+        }
+
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-            border-radius: 20px;
-            transition: all 0.3s ease;
         }
-        .video-card video:hover {
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-        }
-        .video-card h3 {
-            font-size: 2.2em;
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
-            margin: 0;
-        }
-        .essay-card {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 30px;
-            align-items: center;
-        }
-        .essay-card .essay-label {
-            background: rgb(var(--primary-rgb));
-            padding: 40px 30px;
-            border-radius: 20px;
-            text-align: center;
-            font-size: 2.2em;
-            font-weight: bold;
-            text-shadow: 3px 3px 8px rgba(0,0,0,0.7);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3), inset 0 0 25px rgba(var(--secondary-rgb), 0.4);
-            height: 220px;
+
+        .card-info {
+            padding: 15px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
         }
-        .modal {
+
+        .enlarge-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        /* Special Essay Row */
+        .essay-section {
+            grid-column: 1 / -1;
+            display: flex;
+            background: var(--primary);
+            color: white;
+            border-radius: 20px;
+            overflow: hidden;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .essay-text {
+            flex: 1;
+            padding: 30px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .essay-video {
+            flex: 1.5;
+            position: relative;
+            padding-top: 30%;
+        }
+
+        /* Modal for Enlarged Video */
+        #video-modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(var(--primary-rgb), 0.96);
-            display: flex;
-            align-items: center;
+            background: rgba(0,0,0,0.9);
+            display: none;
             justify-content: center;
+            align-items: center;
             z-index: 2000;
-            backdrop-filter: blur(20px);
         }
-        .modal video {
-            max-width: 95vw;
-            max-height: 95vh;
-            width: auto;
-            height: auto;
-            border-radius: 25px;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+
+        #modal-content {
+            width: 90%;
+            max-width: 1000px;
+            position: relative;
         }
-        .modal-close {
+
+        #modal-video {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 0 30px var(--accent);
+        }
+
+        .close-modal {
             position: absolute;
-            top: 40px;
-            right: 40px;
-            background: rgba(var(--secondary-rgb), 0.95);
-            color: rgb(var(--primary-rgb));
-            border: none;
-            padding: 20px 25px;
-            font-size: 2em;
-            border-radius: 50%;
+            top: -50px;
+            right: 0;
+            color: white;
+            font-size: 2rem;
             cursor: pointer;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            transition: all 0.3s ease;
-            z-index: 2001;
+            background: none;
+            border: none;
         }
-        .modal-close:hover {
-            transform: scale(1.2);
-            background: rgb(var(--secondary-rgb));
-        }
-        #brain-notification {
+
+        /* Brain Notification */
+        #brain-popup {
             position: fixed;
-            top: 50%;
+            bottom: 30px;
             right: -400px;
-            transform: translateY(-50%);
-            background: rgba(var(--primary-rgb), 0.97);
-            padding: 30px;
-            border-radius: 25px 0 0 25px;
-            box-shadow: -15px 0 40px rgba(0,0,0,0.5);
-            transition: right 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            z-index: 1000;
+            background: var(--accent);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px 0 0 15px;
             display: flex;
             align-items: center;
-            gap: 20px;
-            max-width: 400px;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(var(--secondary-rgb), 0.3);
+            gap: 15px;
+            box-shadow: -5px 5px 20px rgba(0,0,0,0.3);
+            transition: right 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1500;
         }
-        #brain-notification.show {
+
+        #brain-popup.active {
             right: 0;
         }
-        #brain-notification img {
-            width: 80px;
-            height: auto;
+
+        #brain-popup img {
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            background: white;
         }
-        #brain-notification h2 {
-            font-size: 2.5em;
-            text-shadow: 3px 3px 8px rgba(0,0,0,0.8);
-            margin: 0;
-        }
+
         @media (max-width: 768px) {
-            body {
+            .essay-section {
+                flex-direction: column;
+            }
+            .essay-video {
+                width: 100%;
+                padding-top: 56.25%;
+            }
+            .container {
                 padding: 15px;
-                gap: 25px;
-            }
-            .video-container {
-                gap: 30px;
-            }
-            .video-card {
-                padding: 25px;
-            }
-            .video-card video, .essay-card .essay-label {
-                height: 180px;
-            }
-            #focus-banner h1 {
-                font-size: 2.2em;
-            }
-            .essay-card {
-                grid-template-columns: 1fr;
-                gap: 25px;
-            }
-            .essay-card .essay-label {
-                grid-row: 1;
-                height: 180px;
-                font-size: 1.8em;
-                padding: 30px 20px;
-            }
-            .essay-card video {
-                grid-row: 2;
-            }
-            #mode-toggle {
-                top: 15px;
-                right: 15px;
-                padding: 12px 18px;
-                font-size: 1.3em;
-            }
-            .modal-close {
-                top: 20px;
-                right: 20px;
-                padding: 15px 20px;
-                font-size: 1.5em;
             }
         }
     </style>
 </head>
 <body>
-    <button id="mode-toggle">☀️</button>
 
-    <div id="focus-banner">
-        <img src="rakez.jpg" alt="ركز">
-        <h1>ركز</h1>
-        <p>اكتب أي ملاحظات مهمة:</p>
-        <textarea id="notes" placeholder="اكتب ملاحظاتك المهمة هنا..."></textarea>
+    <button class="theme-switch" onclick="toggleTheme()">🌓 تبديل الوضع</button>
+
+    <div class="container">
+        <header class="header">
+            <img src="rakez.jpg" alt="Focus">
+            <h1>ركز واستعد! 💡</h1>
+            <div class="notes-area">
+                <textarea placeholder="اكتب ملاحظاتك المهمة هنا أثناء المشاهدة..."></textarea>
+            </div>
+        </header>
+
+        <div class="video-grid">
+            <!-- Videos 1 to 6 -->
+            <div class="video-card">
+                <div class="video-wrapper">
+                    <video src="q1.mp4" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>
+                </div>
+                <div class="card-info">
+                    <span>الفيديو الأول 01</span>
+                    <button class="enlarge-btn" onclick="openVideo('q1.mp4')">تكبير 🔍</button>
+                </div>
+            </div>
+
+            <div class="video-card">
+                <div class="video-wrapper">
+                    <video src="q2.mp4" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>
+                </div>
+                <div class="card-info">
+                    <span>الفيديو الثاني 02</span>
+                    <button class="enlarge-btn" onclick="openVideo('q2.mp4')">تكبير 🔍</button>
+                </div>
+            </div>
+
+            <div class="video-card">
+                <div class="video-wrapper">
+                    <video src="q3.mp4" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>
+                </div>
+                <div class="card-info">
+                    <span>الفيديو الثالث 03</span>
+                    <button class="enlarge-btn" onclick="openVideo('q3.mp4')">تكبير 🔍</button>
+                </div>
+            </div>
+
+            <div class="video-card">
+                <div class="video-wrapper">
+                    <video src="q4.mp4" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>
+                </div>
+                <div class="card-info">
+                    <span>الفيديو الرابع 04</span>
+                    <button class="enlarge-btn" onclick="openVideo('q4.mp4')">تكبير 🔍</button>
+                </div>
+            </div>
+
+            <div class="video-card">
+                <div class="video-wrapper">
+                    <video src="q5.mp4" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>
+                </div>
+                <div class="card-info">
+                    <span>الفيديو الخامس 05</span>
+                    <button class="enlarge-btn" onclick="openVideo('q5.mp4')">تكبير 🔍</button>
+                </div>
+            </div>
+
+            <div class="video-card">
+                <div class="video-wrapper">
+                    <video src="q6.mp4" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>
+                </div>
+                <div class="card-info">
+                    <span>الفيديو السادس 06</span>
+                    <button class="enlarge-btn" onclick="openVideo('q6.mp4')">تكبير 🔍</button>
+                </div>
+            </div>
+
+            <!-- Essay Video Section -->
+            <div class="essay-section">
+                <div class="essay-text">
+                    📝 سؤال مقالي هام
+                </div>
+                <div class="essay-video video-wrapper">
+                    <video src="mkali.mp4" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>
+                    <button class="enlarge-btn" style="position: absolute; bottom: 10px; left: 10px;" onclick="openVideo('mkali.mp4')">تكبير 🔍</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="video-container">
-        <div class="video-card">
-            <div class="video-wrapper">
-                <video src="q1.mp4" controls preload="metadata"></video>
-            </div>
-            <h3>سؤال ١</h3>
-        </div>
-        <div class="video-card">
-            <div class="video-wrapper">
-                <video src="q2.mp4" controls preload="metadata"></video>
-            </div>
-            <h3>سؤال ٢</h3>
-        </div>
-        <div class="video-card">
-            <div class="video-wrapper">
-                <video src="q3.mp4" controls preload="metadata"></video>
-            </div>
-            <h3>سؤال ٣</h3>
-        </div>
-        <div class="video-card">
-            <div class="video-wrapper">
-                <video src="q4.mp4" controls preload="metadata"></video>
-            </div>
-            <h3>سؤال ٤</h3>
-        </div>
-        <div class="video-card">
-            <div class="video-wrapper">
-                <video src="q5.mp4" controls preload="metadata"></video>
-            </div>
-            <h3>سؤال ٥</h3>
-        </div>
-        <div class="video-card">
-            <div class="video-wrapper">
-                <video src="q6.mp4" controls preload="metadata"></video>
-            </div>
-            <h3>سؤال ٦</h3>
-        </div>
-        <div class="video-card essay-card">
-            <div class="essay-label">سؤال مقالي</div>
-            <div class="video-wrapper">
-                <video src="mkali.mp4" controls preload="metadata"></video>
-            </div>
+    <!-- Modal for enlarging -->
+    <div id="video-modal" onclick="closeVideo()">
+        <div id="modal-content" onclick="event.stopPropagation()">
+            <button class="close-modal" onclick="closeVideo()">✕</button>
+            <video id="modal-video" controls></video>
         </div>
     </div>
 
-    <div id="brain-notification">
-        <img src="mokh.jpg" alt="شغل مخك">
-        <h2>شغل مخك!</h2>
+    <!-- Notification -->
+    <div id="brain-popup">
+        <img src="mokh.jpg" alt="Brain">
+        <div>
+            <strong>تنبيه ذكي!</strong><br>
+            <span>شغل مخك وركز في التفاصيل 🧠</span>
+        </div>
     </div>
 
     <script>
-        // Dark/Light mode toggle
-        const toggle = document.getElementById('mode-toggle');
-        toggle.textContent = '☀️'; // Default dark, toggle to light
-        toggle.addEventListener('click', () => {
-            document.body.classList.toggle('light-mode');
-            toggle.textContent = document.body.classList.contains('light-mode') ? '🌙' : '☀️';
-        });
-
-        // Video enlarge modal
-        let modal = null;
-        function openModal(src) {
-            if (modal) modal.remove();
-            modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.innerHTML = `
-                <button class="modal-close">&times;</button>
-                <video src="${src}" controls autoplay></video>
-            `;
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) modal.remove();
-            });
-            modal.querySelector('.modal-close').addEventListener('click', () => modal.remove());
-            document.body.appendChild(modal);
-            modal.querySelector('video').focus();
+        // Dark Mode Logic
+        function toggleTheme() {
+            const body = document.body;
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+            }
         }
 
-        // Close modal on Escape
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modal) {
-                modal.remove();
-            }
-        });
+        // Enlarge Video Logic
+        const modal = document.getElementById('video-modal');
+        const modalVid = document.getElementById('modal-video');
 
-        // Click video to enlarge
-        document.querySelectorAll('video').forEach(video => {
-            video.addEventListener('click', (e) => {
-                e.stopPropagation();
-                openModal(video.src);
-            });
-        });
+        function openVideo(src) {
+            modalVid.src = src;
+            modal.style.display = 'flex';
+            modalVid.play();
+        }
 
-        // Hover preview play
-        document.querySelectorAll('.video-card').forEach(card => {
-            const video = card.querySelector('video');
-            card.addEventListener('mouseenter', () => {
-                video.currentTime = 0;
-                video.play().catch(() => {});
-            });
-            card.addEventListener('mouseleave', () => {
-                video.pause();
-            });
-        });
+        function closeVideo() {
+            modal.style.display = 'none';
+            modalVid.pause();
+            modalVid.src = '';
+        }
 
-        // Periodic brain message
-        setInterval(() => {
-            const notification = document.getElementById('brain-notification');
-            notification.classList.add('show');
+        // Brain Notification Popup Logic
+        function showBrainPopup() {
+            const popup = document.getElementById('brain-popup');
+            popup.classList.add('active');
+            
             setTimeout(() => {
-                notification.classList.remove('show');
-            }, 4500);
-        }, 20000);
+                popup.classList.remove('active');
+            }, 5000);
+        }
 
-        // Click to dismiss brain notification
-        document.getElementById('brain-notification').addEventListener('click', function() {
-            this.classList.remove('show');
+        // Show every 30 seconds
+        setInterval(showBrainPopup, 30000);
+        // First show after 10 seconds
+        setTimeout(showBrainPopup, 10000);
+
+        // Escape key to close modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape") closeVideo();
         });
     </script>
 </body>
